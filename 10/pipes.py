@@ -1,5 +1,6 @@
 from sys import argv
 import time
+import math
 
 def read_input(f):
   return [line.strip() for line in f]
@@ -19,7 +20,7 @@ NEIGHBOR = {  '|': [(-1,0), (1, 0)], '-': [( 0,-1), (0, 1)],
 def dfs(start, end, board):
   current = start
   prev = end
-  path = []
+  path = [end]
   while current != end:
     if not in_board(current, board):
       return []
@@ -38,12 +39,7 @@ def dfs(start, end, board):
     
   return path
   
-
-''' Part 1 '''
-if __name__ == "__main__" and len(argv) == 2:
-  start_t = time.time()
-  board = read_input(open(argv[1]))
-
+def find_cycle(board):
   start = None
   for i, line in enumerate(board):
     if (j := line.find('S')) >= 0:
@@ -54,12 +50,40 @@ if __name__ == "__main__" and len(argv) == 2:
     path = dfs(n, start, board)
     if path:
       break
-  print((len(path)+1)/2)
+  return path
+
+''' Part 1 '''
+if __name__ == "__main__" and len(argv) == 2:
+  start_t = time.time()
+  board = read_input(open(argv[1]))
+  path = find_cycle(board)
+  print((len(path))/2)
   print(round(time.time() - start_t, 3), 's')
 
+
+def inside_loop_2(i, j, loop, board):
+  if (i,j) in loop:
+    return 0
+  intersect = 0
+  ci = i-1; cj = j-1
+  while ci >= 0 and cj >= 0:
+    pipe = board[ci][cj]
+    if (ci, cj) in loop and pipe != 'L' and pipe != '7':
+      intersect += 1
+    ci -= 1; cj -= 1
+  return intersect % 2
 
 ''' Part 2 '''
 if __name__ == "__main__" and len(argv) == 3 and argv[2] == '2':
   start_t = time.time()
-  read_input(open(argv[1]))
+  board = read_input(open(argv[1]))
+  path = find_cycle(board)
+  path = set(path)
+  inside = 0
+  for i, row in enumerate(board):
+    for j, pipe in enumerate(row):
+      if inside_loop(i,j, path, board):
+        inside += 1
+  print(inside)
   print(round(time.time() - start_t, 3), 's')
+
