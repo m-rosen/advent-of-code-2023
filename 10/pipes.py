@@ -61,7 +61,7 @@ if __name__ == "__main__" and len(argv) == 2:
   print(round(time.time() - start_t, 3), 's')
 
 
-def inside_loop_2(i, j, loop, board):
+def inside_loop(i, j, loop, board):
   if (i,j) in loop:
     return 0
   intersect = 0
